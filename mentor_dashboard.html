@@ -1,0 +1,458 @@
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>MentorHub | Mentor Dashboard</title>
+
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: "Segoe UI", Arial, sans-serif;
+        }
+
+        body {
+            background: #f4f5ff;
+            color: #202343;
+        }
+
+        .layout {
+            display: flex;
+            min-height: 100vh;
+        }
+
+        .sidebar {
+            width: 245px;
+            background: linear-gradient(180deg, #171638, #31266b);
+            color: white;
+            padding: 30px 20px;
+            flex-shrink: 0;
+        }
+
+        .brand {
+            font-size: 25px;
+            font-weight: 800;
+            margin-bottom: 12px;
+        }
+
+        .brand span {
+            color: #a99bff;
+        }
+
+        .sidebar p {
+            color: #c5c2e9;
+            font-size: 13px;
+            margin-bottom: 35px;
+        }
+
+        .nav-link {
+            display: block;
+            color: #e2dfff;
+            text-decoration: none;
+            padding: 14px;
+            margin: 9px 0;
+            border-radius: 12px;
+            transition: 0.2s;
+        }
+
+        .nav-link:hover,
+        .nav-link.active {
+            background: linear-gradient(90deg, #7562ef, #927bff);
+            color: white;
+        }
+
+        .main {
+            flex: 1;
+            padding: 30px;
+            min-width: 0;
+        }
+
+        .topbar {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            gap: 15px;
+            flex-wrap: wrap;
+            margin-bottom: 30px;
+        }
+
+        .topbar h1 {
+            font-size: 30px;
+        }
+
+        .topbar p {
+            color: #777991;
+            margin-top: 7px;
+        }
+
+        .tag {
+            background: #e8e3ff;
+            color: #5c48d9;
+            padding: 11px 17px;
+            border-radius: 25px;
+            font-size: 13px;
+            font-weight: 700;
+        }
+
+        .stats {
+            display: grid;
+            grid-template-columns: repeat(3, minmax(0, 1fr));
+            gap: 20px;
+            margin-bottom: 28px;
+        }
+
+        .stat-card {
+            background: white;
+            padding: 25px;
+            border-radius: 19px;
+            box-shadow: 0 8px 28px #28205a0d;
+            border: 1px solid #ecebfa;
+        }
+
+        .stat-card .icon {
+            display: inline-flex;
+            background: #eeeaff;
+            color: #6954e8;
+            padding: 12px;
+            border-radius: 12px;
+            font-size: 22px;
+            margin-bottom: 18px;
+        }
+
+        .stat-card h2 {
+            font-size: 31px;
+            margin-bottom: 7px;
+        }
+
+        .stat-card p {
+            color: #777991;
+            font-size: 14px;
+        }
+
+        .content-grid {
+            display: grid;
+            grid-template-columns: minmax(260px, 0.8fr) minmax(0, 1.5fr);
+            gap: 22px;
+            align-items: start;
+        }
+
+        .panel {
+            background: white;
+            padding: 25px;
+            border-radius: 19px;
+            border: 1px solid #ecebfa;
+            box-shadow: 0 8px 28px #28205a0d;
+            min-width: 0;
+        }
+
+        .panel h2 {
+            font-size: 20px;
+            margin-bottom: 8px;
+        }
+
+        .subtext {
+            color: #85869c;
+            font-size: 13px;
+            margin-bottom: 22px;
+        }
+
+        label {
+            display: block;
+            font-size: 13px;
+            font-weight: 650;
+            margin: 16px 0 8px;
+        }
+
+        input {
+            width: 100%;
+            padding: 13px;
+            border: 1px solid #deddf0;
+            border-radius: 10px;
+            outline: none;
+            background: #fcfcff;
+            font-size: 14px;
+        }
+
+        input:focus {
+            border-color: #7864ed;
+            box-shadow: 0 0 0 3px #7864ed1a;
+        }
+
+        button,
+        .back-btn {
+            border: none;
+            border-radius: 10px;
+            padding: 12px 16px;
+            font-size: 13px;
+            font-weight: 700;
+            cursor: pointer;
+            text-decoration: none;
+            display: inline-block;
+        }
+
+        .add-btn {
+            width: 100%;
+            margin-top: 22px;
+            color: white;
+            background: linear-gradient(90deg, #6853e6, #9178ff);
+        }
+
+        .add-btn:hover {
+            filter: brightness(1.06);
+        }
+
+        .search {
+            margin: 15px 0 20px;
+        }
+
+        .table-wrap {
+            overflow-x: auto;
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            text-align: left;
+            min-width: 430px;
+        }
+
+        th {
+            background: #f6f5ff;
+            color: #6b6c87;
+            font-size: 12px;
+            text-transform: uppercase;
+            letter-spacing: 0.4px;
+        }
+
+        th, td {
+            padding: 15px 12px;
+            border-bottom: 1px solid #efeff7;
+        }
+
+        td {
+            font-size: 13px;
+        }
+
+        .mentor-name {
+            font-weight: 700;
+        }
+
+        .department {
+            color: #6c59dc;
+            background: #efecff;
+            padding: 6px 9px;
+            border-radius: 8px;
+            display: inline-block;
+        }
+
+        .remove-btn {
+            color: #bd3150;
+            background: #fff0f2;
+        }
+
+        .remove-btn:hover {
+            background: #ffe1e6;
+        }
+
+        .empty {
+            text-align: center;
+            color: #85869c;
+            padding: 30px;
+        }
+
+        @media (max-width: 1050px) {
+            .content-grid {
+                grid-template-columns: 1fr;
+            }
+
+            .stats {
+                grid-template-columns: repeat(2, minmax(0, 1fr));
+            }
+        }
+
+        @media (max-width: 650px) {
+            .layout {
+                display: block;
+            }
+
+            .sidebar {
+                width: 100%;
+                padding: 20px;
+            }
+
+            .main {
+                padding: 18px;
+            }
+
+            .stats {
+                grid-template-columns: 1fr;
+            }
+
+            .topbar h1 {
+                font-size: 25px;
+            }
+        }
+    </style>
+</head>
+
+<body>
+<div class="layout">
+
+    <aside class="sidebar">
+        <div class="brand">Mentor<span>Hub.</span></div>
+        <p>STUDENT MENTORSHIP SYSTEM</p>
+
+        <a class="nav-link" href="{{ url_for('dashboard') }}">
+            ◈ Main Dashboard
+        </a>
+
+        <a class="nav-link active" href="{{ url_for('mentor_dashboard') }}">
+            ♙ Mentor Management
+        </a>
+    </aside>
+
+    <main class="main">
+
+        <header class="topbar">
+            <div>
+                <h1>Mentor Dashboard 👋</h1>
+                <p>Manage mentors and their departments in one place.</p>
+            </div>
+            <div class="tag">● MENTOR MANAGEMENT</div>
+        </header>
+
+        <section class="stats">
+            <div class="stat-card">
+                <div class="icon">♙</div>
+                <h2>{{ total_mentors }}</h2>
+                <p>Total Mentors</p>
+            </div>
+
+            <div class="stat-card">
+                <div class="icon">🏢</div>
+                <h2>{{ total_departments }}</h2>
+                <p>Departments Represented</p>
+            </div>
+
+            <div class="stat-card">
+                <div class="icon">🎓</div>
+                <h2>{{ assigned_students }}</h2>
+                <p>Students with Assigned Mentors</p>
+            </div>
+        </section>
+
+        <section class="content-grid">
+
+            <div class="panel">
+                <h2>＋ Add New Mentor</h2>
+                <p class="subtext">Enter the mentor details below.</p>
+
+                <form action="{{ url_for('add_mentor') }}" method="POST">
+                    <label for="mentor_name">Mentor Name</label>
+                    <input
+                        id="mentor_name"
+                        type="text"
+                        name="mentor_name"
+                        placeholder="Enter mentor name"
+                        required
+                    >
+
+                    <label for="mentor_department">Department</label>
+                    <input
+                        id="mentor_department"
+                        type="text"
+                        name="mentor_department"
+                        placeholder="e.g. CSE, ECE, EEE"
+                        required
+                    >
+
+                    <button class="add-btn" type="submit">
+                        + Add Mentor
+                    </button>
+                </form>
+            </div>
+
+            <div class="panel">
+                <h2>Mentor Directory</h2>
+                <p class="subtext">View, search and manage existing mentors.</p>
+
+                <input
+                    class="search"
+                    id="mentorSearch"
+                    type="text"
+                    placeholder="Search by mentor name or department..."
+                >
+
+                <div class="table-wrap">
+                    <table id="mentorTable">
+                        <thead>
+                            <tr>
+                                <th>Mentor</th>
+                                <th>Department</th>
+                                <th>Action</th>
+                            </tr>
+                        </thead>
+
+                        <tbody>
+                        {% for mentor in mentors %}
+                            <tr>
+                                <td class="mentor-name">
+                                    {{ mentor.mentor_name }}
+                                </td>
+
+                                <td>
+                                    <span class="department">
+                                        {{ mentor.department }}
+                                    </span>
+                                </td>
+
+                                <td>
+                                    <form
+                                        action="{{ url_for('delete_mentor', mentor_id=mentor.mentor_id) }}"
+                                        method="POST"
+                                        onsubmit="return confirm('Remove this mentor? Their student assignments will be cleared.');"
+                                    >
+                                        <button
+                                            class="remove-btn"
+                                            type="submit"
+                                        >
+                                            Remove
+                                        </button>
+                                    </form>
+                                </td>
+                            </tr>
+                        {% else %}
+                            <tr>
+                                <td colspan="3" class="empty">
+                                    No mentors found. Add your first mentor!
+                                </td>
+                            </tr>
+                        {% endfor %}
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+
+        </section>
+    </main>
+</div>
+
+<script>
+    const searchBox = document.getElementById("mentorSearch");
+    const rows = document.querySelectorAll("#mentorTable tbody tr");
+
+    searchBox.addEventListener("input", function () {
+        const searchText = this.value.toLowerCase();
+
+        rows.forEach(function (row) {
+            const rowText = row.innerText.toLowerCase();
+            row.style.display = rowText.includes(searchText) ? "" : "none";
+        });
+    });
+</script>
+
+</body>
+</html>

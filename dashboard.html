@@ -1,0 +1,1312 @@
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>MentorHub | Student Mentorship Management</title>
+
+    <style>
+        :root {
+            --purple: #7652e8;
+            --purple-dark: #30204f;
+            --purple-light: #f4f0ff;
+            --bg: #f6f5ff;
+            --text: #252341;
+            --muted: #8888a8;
+            --border: #e8e5f5;
+            --green: #13a778;
+            --red: #e45b72;
+            --white: #ffffff;
+        }
+
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
+
+        body {
+            font-family: "Segoe UI", Arial, sans-serif;
+            background: var(--bg);
+            color: var(--text);
+        }
+
+        button, input, select, textarea {
+            font: inherit;
+        }
+
+        button, a {
+            -webkit-tap-highlight-color: transparent;
+        }
+
+        .sidebar {
+            width: 255px;
+            height: 100vh;
+            position: fixed;
+            left: 0;
+            top: 0;
+            background: linear-gradient(180deg, #21173e, #3a2866);
+            color: white;
+            padding: 28px 16px;
+            display: flex;
+            flex-direction: column;
+            z-index: 100;
+        }
+
+        .brand {
+            font-size: 27px;
+            font-weight: 800;
+            margin: 10px 4px 48px;
+            letter-spacing: -1px;
+        }
+
+        .brand span {
+            color: #bca9ff;
+        }
+
+        .menu-label {
+            color: #b7a9f8;
+            font-size: 12px;
+            letter-spacing: 1.5px;
+            margin: 0 8px 16px;
+        }
+
+        .nav-link {
+            color: #f7f4ff;
+            text-decoration: none;
+            display: flex;
+            align-items: center;
+            gap: 13px;
+            padding: 16px 14px;
+            border-radius: 13px;
+            margin-bottom: 7px;
+            transition: .2s;
+            cursor: pointer;
+            border: 0;
+            background: transparent;
+            width: 100%;
+            text-align: left;
+            font-size: 15px;
+        }
+
+        .nav-link:hover,
+        .nav-link.active {
+            background: linear-gradient(100deg, #704ce0, #9877f5);
+            color: white;
+        }
+
+        .nav-icon {
+            width: 20px;
+            text-align: center;
+            font-size: 17px;
+        }
+
+        .sidebar-footer {
+            margin-top: auto;
+            padding: 12px 4px;
+            font-size: 12px;
+            color: #d1c6ff;
+            line-height: 2;
+        }
+
+        .main {
+            margin-left: 255px;
+            padding: 28px;
+            min-height: 100vh;
+        }
+
+        .topbar {
+            background: linear-gradient(110deg, #3c286b, #9875f4);
+            color: white;
+            border-radius: 22px;
+            padding: 30px 34px;
+            margin-bottom: 25px;
+            box-shadow: 0 12px 30px #6046a51c;
+        }
+
+        .topbar h1 {
+            font-size: 29px;
+            margin-bottom: 9px;
+        }
+
+        .topbar p {
+            color: #f0eaff;
+            line-height: 1.6;
+        }
+
+        .topbar-row {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            gap: 15px;
+        }
+
+        .date-label {
+            background: #ffffff24;
+            padding: 10px 14px;
+            border-radius: 12px;
+            font-size: 13px;
+            white-space: nowrap;
+        }
+
+        .page-section {
+            display: none;
+            animation: appear .25s ease;
+        }
+
+        .page-section.active {
+            display: block;
+        }
+
+        @keyframes appear {
+            from { opacity: 0; transform: translateY(5px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        .stats-grid {
+            display: grid;
+            grid-template-columns: repeat(4, minmax(0, 1fr));
+            gap: 18px;
+            margin-bottom: 25px;
+        }
+
+        .stat-card {
+            background: white;
+            border: 1px solid var(--border);
+            border-radius: 19px;
+            padding: 23px;
+            min-height: 180px;
+            box-shadow: 0 8px 25px #42306b05;
+        }
+
+        .stat-icon {
+            width: 49px;
+            height: 49px;
+            display: grid;
+            place-items: center;
+            border-radius: 15px;
+            font-size: 23px;
+            margin-bottom: 18px;
+        }
+
+        .icon-purple { background: #eee7ff; color: #8056eb; }
+        .icon-blue { background: #e5efff; color: #3982e8; }
+        .icon-pink { background: #ffe8f0; color: #e8528d; }
+        .icon-green { background: #e0f8ed; color: #12a878; }
+
+        .stat-label {
+            font-size: 13px;
+            color: var(--muted);
+        }
+
+        .stat-number {
+            font-size: 31px;
+            font-weight: 800;
+            margin: 8px 0;
+        }
+
+        .stat-note {
+            font-size: 12px;
+            color: #9694b1;
+        }
+
+        .panel {
+            background: white;
+            border: 1px solid var(--border);
+            border-radius: 21px;
+            padding: 27px;
+            margin-bottom: 24px;
+            box-shadow: 0 8px 25px #42306b05;
+            min-width: 0;
+        }
+
+        .panel-heading {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            gap: 15px;
+            margin-bottom: 23px;
+        }
+
+        .panel-heading h2,
+        .panel > h2 {
+            font-size: 21px;
+            margin-bottom: 8px;
+        }
+
+        .muted {
+            color: var(--muted);
+            font-size: 13px;
+            line-height: 1.6;
+        }
+
+        .pill {
+            background: #f0eaff;
+            color: #7652e8;
+            border-radius: 30px;
+            padding: 9px 13px;
+            font-size: 12px;
+            white-space: nowrap;
+            display: inline-block;
+        }
+
+        .form-box {
+            background: linear-gradient(120deg, #faf8ff, #f3f3ff);
+            border: 1px solid #e5ddff;
+            border-radius: 17px;
+            padding: 22px;
+            margin-bottom: 29px;
+        }
+
+        .form-box h3 {
+            font-size: 16px;
+            margin-bottom: 18px;
+        }
+
+        .form-grid {
+            display: grid;
+            grid-template-columns: repeat(2, minmax(0, 1fr));
+            gap: 14px;
+        }
+
+        .form-grid input,
+        .form-grid select,
+        .form-grid textarea,
+        .search {
+            width: 100%;
+            min-width: 0;
+            padding: 14px 15px;
+            background: white;
+            color: var(--text);
+            border: 1px solid #e0dcef;
+            border-radius: 12px;
+            outline: none;
+            transition: .2s;
+        }
+
+        .form-grid input:focus,
+        .form-grid select:focus,
+        .form-grid textarea:focus,
+        .search:focus {
+            border-color: #9578ef;
+            box-shadow: 0 0 0 3px #9578ef1c;
+        }
+
+        .form-grid textarea {
+            min-height: 85px;
+            resize: vertical;
+        }
+
+        .primary-btn,
+        .danger-btn,
+        .download-btn {
+            border: 0;
+            border-radius: 11px;
+            padding: 13px 17px;
+            cursor: pointer;
+            font-weight: 700;
+            transition: .2s;
+        }
+
+        .primary-btn {
+            background: linear-gradient(100deg, #704ce0, #9675f3);
+            color: white;
+        }
+
+        .primary-btn:hover {
+            filter: brightness(1.05);
+            transform: translateY(-1px);
+        }
+
+        .full-btn {
+            width: 100%;
+            margin-top: 15px;
+        }
+
+        .danger-btn {
+            background: #fff0f2;
+            color: #d84660;
+            padding: 9px 12px;
+            font-size: 12px;
+        }
+
+        .danger-btn:hover {
+            background: #ffe0e5;
+        }
+
+        .download-btn {
+            background: #e4f8ed;
+            color: #087b56;
+            text-decoration: none;
+            display: inline-block;
+            font-size: 13px;
+        }
+
+        .table-toolbar {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            gap: 15px;
+            margin: 20px 0;
+        }
+
+        .search {
+            max-width: 450px;
+            padding: 14px 15px;
+        }
+
+        .table-wrap {
+            overflow-x: auto;
+            width: 100%;
+            border-radius: 10px;
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            min-width: 650px;
+        }
+
+        th {
+            background: #f4f0ff;
+            color: #6950bb;
+            text-transform: uppercase;
+            font-size: 12px;
+            letter-spacing: .4px;
+            padding: 16px 13px;
+            text-align: left;
+        }
+
+        td {
+            padding: 16px 13px;
+            border-bottom: 1px solid #f0edf8;
+            font-size: 13px;
+            vertical-align: middle;
+        }
+
+        tbody tr:hover {
+            background: #fcfbff;
+        }
+
+        td form {
+            display: inline;
+        }
+
+        .empty {
+            padding: 32px;
+            text-align: center;
+            color: var(--muted);
+        }
+
+        .analytics-grid {
+            display: grid;
+            grid-template-columns: repeat(2, minmax(0, 1fr));
+            gap: 22px;
+        }
+
+        .chart-card {
+            background: white;
+            border: 1px solid var(--border);
+            border-radius: 18px;
+            padding: 24px;
+            margin-bottom: 5px;
+        }
+
+        .chart-card h3 {
+            margin-bottom: 7px;
+            font-size: 17px;
+        }
+
+        .bar-item {
+            margin-top: 22px;
+        }
+
+        .bar-label {
+            display: flex;
+            justify-content: space-between;
+            gap: 10px;
+            font-size: 13px;
+            margin-bottom: 9px;
+        }
+
+        .bar-track {
+            height: 10px;
+            background: #f0ecfa;
+            border-radius: 20px;
+            overflow: hidden;
+        }
+
+        .bar-fill {
+            height: 100%;
+            background: linear-gradient(90deg, #704ce0, #a78bfa);
+            border-radius: 20px;
+        }
+
+        .quick-actions {
+            display: flex;
+            gap: 12px;
+            flex-wrap: wrap;
+            margin-top: 18px;
+        }
+
+        .quick-actions button {
+            cursor: pointer;
+        }
+
+        .status-note {
+            font-size: 12px;
+            color: var(--muted);
+            margin-top: 8px;
+        }
+
+        @media (max-width: 1100px) {
+            .stats-grid {
+                grid-template-columns: repeat(2, minmax(0, 1fr));
+            }
+
+            .main {
+                padding: 20px;
+            }
+        }
+
+        @media (max-width: 760px) {
+            .sidebar {
+                width: 72px;
+                padding: 20px 8px;
+            }
+
+            .brand {
+                font-size: 0;
+                margin: 10px 0 35px;
+                text-align: center;
+            }
+
+            .brand::before {
+                content: "✦";
+                font-size: 28px;
+            }
+
+            .menu-label,
+            .nav-text,
+            .sidebar-footer {
+                display: none;
+            }
+
+            .nav-link {
+                justify-content: center;
+                padding: 16px 5px;
+            }
+
+            .nav-icon {
+                font-size: 20px;
+            }
+
+            .main {
+                margin-left: 72px;
+                padding: 14px;
+            }
+
+            .topbar {
+                padding: 23px 20px;
+                border-radius: 17px;
+            }
+
+            .topbar h1 {
+                font-size: 23px;
+            }
+
+            .date-label {
+                display: none;
+            }
+
+            .stats-grid {
+                gap: 10px;
+            }
+
+            .stat-card {
+                padding: 16px;
+                min-height: 155px;
+            }
+
+            .stat-number {
+                font-size: 25px;
+            }
+
+            .panel {
+                padding: 17px;
+            }
+
+            .form-grid,
+            .analytics-grid {
+                grid-template-columns: 1fr;
+            }
+
+            .table-toolbar {
+                align-items: stretch;
+                flex-direction: column;
+            }
+
+            .search {
+                max-width: 100%;
+            }
+
+            .panel-heading {
+                align-items: flex-start;
+            }
+        }
+    </style>
+</head>
+
+<body>
+
+<aside class="sidebar">
+    <div class="brand">✦ Mentor<span>Hub</span></div>
+
+    <div class="menu-label">MAIN MENU</div>
+
+    <button class="nav-link active" data-page="dashboard">
+        <span class="nav-icon">▦</span>
+        <span class="nav-text">Dashboard</span>
+    </button>
+
+    <button class="nav-link" data-page="students">
+        <span class="nav-icon">♙</span>
+        <span class="nav-text">Students</span>
+    </button>
+
+    <button class="nav-link" data-page="mentors">
+        <span class="nav-icon">♧</span>
+        <span class="nav-text">Mentors</span>
+    </button>
+
+    <button class="nav-link" data-page="assignments">
+        <span class="nav-icon">▤</span>
+        <span class="nav-text">Assignments</span>
+    </button>
+
+    <button class="nav-link" data-page="meetings">
+        <span class="nav-icon">◷</span>
+        <span class="nav-text">Meetings</span>
+    </button>
+
+    <button class="nav-link" data-page="analytics">
+        <span class="nav-icon">▥</span>
+        <span class="nav-text">Analytics</span>
+    </button>
+
+    <div class="sidebar-footer">
+        DBMS MINI PROJECT<br>
+        Student Mentorship System
+    </div>
+</aside>
+
+
+<main class="main">
+
+    <!-- DASHBOARD -->
+    <section id="dashboard" class="page-section active">
+        <header class="topbar">
+            <div class="topbar-row">
+                <div>
+                    <h1>Welcome to MentorHub ✨</h1>
+                    <p>Your student mentorship management dashboard.</p>
+                </div>
+                <div class="date-label">STUDENT MENTORSHIP SYSTEM</div>
+            </div>
+        </header>
+
+        <div class="stats-grid">
+            <div class="stat-card">
+                <div class="stat-icon icon-purple">♙</div>
+                <div class="stat-label">Total Students</div>
+                <div class="stat-number">{{ stats.students }}</div>
+                <div class="stat-note">Registered student records</div>
+            </div>
+
+            <div class="stat-card">
+                <div class="stat-icon icon-blue">♧</div>
+                <div class="stat-label">Total Mentors</div>
+                <div class="stat-number">{{ stats.mentors }}</div>
+                <div class="stat-note">Available mentor records</div>
+            </div>
+
+            <div class="stat-card">
+                <div class="stat-icon icon-pink">▤</div>
+                <div class="stat-label">Assignments</div>
+                <div class="stat-number">{{ stats.assignments }}</div>
+                <div class="stat-note">Saved academic assignments</div>
+            </div>
+
+            <div class="stat-card">
+                <div class="stat-icon icon-green">◷</div>
+                <div class="stat-label">Meetings</div>
+                <div class="stat-number">{{ stats.meetings }}</div>
+                <div class="stat-note">Scheduled meetings</div>
+            </div>
+        </div>
+
+        <div class="panel">
+            <div class="panel-heading">
+                <div>
+                    <h2>Quick Overview</h2>
+                    <p class="muted">Manage your mentorship activities from one place.</p>
+                </div>
+                <span class="pill">MentorHub</span>
+            </div>
+
+            <div class="quick-actions">
+                <button class="primary-btn" onclick="showPage('students')">
+                    + Add Student
+                </button>
+                <button class="primary-btn" onclick="showPage('mentors')">
+                    + Add Mentor
+                </button>
+                <button class="primary-btn" onclick="showPage('assignments')">
+                    + Create Assignment
+                </button>
+                <button class="primary-btn" onclick="showPage('meetings')">
+                    + Schedule Meeting
+                </button>
+            </div>
+        </div>
+
+        <div class="panel">
+            <div class="panel-heading">
+                <div>
+                    <h2>Recent Students</h2>
+                    <p class="muted">Latest student records from your database.</p>
+                </div>
+                <button class="primary-btn" onclick="showPage('students')">
+                    View All
+                </button>
+            </div>
+
+            <div class="table-wrap">
+                <table>
+                    <thead>
+                        <tr>
+                            <th>ID</th>
+                            <th>Name</th>
+                            <th>Department</th>
+                            <th>Year</th>
+                            <th>Mentor</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                    {% for student in students[:5] %}
+                        <tr>
+                            <td>{{ student.student_id }}</td>
+                            <td><strong>{{ student.name }}</strong></td>
+                            <td>{{ student.department }}</td>
+                            <td>{{ student.year }}</td>
+                            <td>{{ student.mentor }}</td>
+                        </tr>
+                    {% else %}
+                        <tr>
+                            <td colspan="5" class="empty">
+                                No students registered yet. Add your first student.
+                            </td>
+                        </tr>
+                    {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </section>
+
+
+    <!-- STUDENTS -->
+    <section id="students" class="page-section">
+        <header class="topbar">
+            <h1>Student Management</h1>
+            <p>Register students, assign mentors and manage student records.</p>
+        </header>
+
+        <div class="panel">
+            <div class="panel-heading">
+                <div>
+                    <h2>Student Management</h2>
+                    <p class="muted">Add students and manage saved records.</p>
+                </div>
+                <span class="pill">{{ students|length }} Students</span>
+            </div>
+
+            <div class="form-box">
+                <h3>＋ Register a New Student</h3>
+
+                <form action="{{ url_for('add_student') }}" method="POST">
+                    <div class="form-grid">
+                        <input type="text" name="student_name"
+                            placeholder="Enter student name" required>
+
+                        <input type="text" name="department"
+                            placeholder="Department (e.g. CSE)" required>
+
+                        <select name="study_year" required>
+                            <option value="">Select Study Year</option>
+                            <option value="1">1st Year</option>
+                            <option value="2">2nd Year</option>
+                            <option value="3">3rd Year</option>
+                            <option value="4">4th Year</option>
+                        </select>
+
+                        <select name="mentor_id">
+                            <option value="">No Mentor Assigned</option>
+                            {% for mentor in mentors %}
+                            <option value="{{ mentor.mentor_id }}">
+                                {{ mentor.mentor_name }} — {{ mentor.department }}
+                            </option>
+                            {% endfor %}
+                        </select>
+                    </div>
+
+                    <button class="primary-btn full-btn" type="submit">
+                        + Add Student
+                    </button>
+                </form>
+            </div>
+
+            <div class="panel-heading">
+                <div>
+                    <h2>Student Records</h2>
+                    <p class="muted">Search students by name, department or mentor.</p>
+                </div>
+                <a class="download-btn" href="{{ url_for('export_csv') }}">
+                    ↓ Download CSV
+                </a>
+            </div>
+
+            <input class="search" type="text"
+                placeholder="Search students..."
+                oninput="filterTable(this, 'studentTable')">
+
+            <div class="table-wrap" style="margin-top:20px">
+                <table id="studentTable">
+                    <thead>
+                        <tr>
+                            <th>ID</th>
+                            <th>Name</th>
+                            <th>Department</th>
+                            <th>Year</th>
+                            <th>Mentor</th>
+                            <th>Status</th>
+                            <th>Action</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                    {% for student in students %}
+                        <tr>
+                            <td>{{ student.student_id }}</td>
+                            <td><strong>{{ student.name }}</strong></td>
+                            <td>{{ student.department }}</td>
+                            <td>{{ student.year }}</td>
+                            <td>{{ student.mentor }}</td>
+                            <td><span class="pill">{{ student.status }}</span></td>
+                            <td>
+                                <form method="POST"
+                                    action="{{ url_for('delete_student', student_id=student.student_id) }}"
+                                    onsubmit="return confirm('Delete this student record?')">
+                                    <button class="danger-btn" type="submit">
+                                        Delete
+                                    </button>
+                                </form>
+                            </td>
+                        </tr>
+                    {% else %}
+                        <tr>
+                            <td colspan="7" class="empty">
+                                No students registered yet.
+                            </td>
+                        </tr>
+                    {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </section>
+
+
+    <!-- MENTORS -->
+    <section id="mentors" class="page-section">
+        <header class="topbar">
+            <h1>Mentor Management</h1>
+            <p>Add mentors, view their departments and manage assignments.</p>
+        </header>
+
+        <div class="stats-grid">
+            <div class="stat-card">
+                <div class="stat-icon icon-purple">♧</div>
+                <div class="stat-label">Total Mentors</div>
+                <div class="stat-number">{{ mentors|length }}</div>
+                <div class="stat-note">Registered mentors</div>
+            </div>
+
+            <div class="stat-card">
+                <div class="stat-icon icon-blue">♙</div>
+                <div class="stat-label">Assigned Students</div>
+                <div class="stat-number">
+                    {{ students|selectattr('mentor_id')|list|length }}
+                </div>
+                <div class="stat-note">Students with a mentor ID</div>
+            </div>
+        </div>
+
+        <div class="panel">
+            <div class="panel-heading">
+                <div>
+                    <h2>Mentor Directory</h2>
+                    <p class="muted">Add a new mentor to the system.</p>
+                </div>
+                <span class="pill">{{ mentors|length }} Mentors</span>
+            </div>
+
+            <div class="form-box">
+                <h3>＋ Register a New Mentor</h3>
+
+                <form method="POST" action="{{ url_for('add_mentor') }}">
+                    <div class="form-grid">
+                        <input type="text" name="mentor_name"
+                            placeholder="Enter mentor name" required>
+
+                        <input type="text" name="mentor_department"
+                            placeholder="Department (e.g. CSE)" required>
+                    </div>
+
+                    <button class="primary-btn full-btn" type="submit">
+                        + Add Mentor
+                    </button>
+                </form>
+            </div>
+
+            <h2 style="margin-bottom:8px">Registered Mentors</h2>
+            <p class="muted">Search mentors by name or department.</p>
+
+            <input class="search" type="text"
+                placeholder="Search mentors..."
+                oninput="filterTable(this, 'mentorTable')"
+                style="margin:20px 0">
+
+            <div class="table-wrap">
+                <table id="mentorTable">
+                    <thead>
+                        <tr>
+                            <th>ID</th>
+                            <th>Mentor Name</th>
+                            <th>Department</th>
+                            <th>Action</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                    {% for mentor in mentors %}
+                        <tr>
+                            <td>{{ mentor.mentor_id }}</td>
+                            <td><strong>{{ mentor.mentor_name }}</strong></td>
+                            <td>{{ mentor.department }}</td>
+                            <td>
+                                <form method="POST"
+                                    action="{{ url_for('delete_mentor', mentor_id=mentor.mentor_id) }}"
+                                    onsubmit="return confirm('Remove this mentor? Assigned students will become unassigned.')">
+                                    <button class="danger-btn" type="submit">
+                                        Remove
+                                    </button>
+                                </form>
+                            </td>
+                        </tr>
+                    {% else %}
+                        <tr>
+                            <td colspan="4" class="empty">
+                                No mentors registered yet.
+                            </td>
+                        </tr>
+                    {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </section>
+
+
+    <!-- ASSIGNMENTS -->
+    <section id="assignments" class="page-section">
+        <header class="topbar">
+            <h1>Assignments</h1>
+            <p>Create assignments and connect them to student records.</p>
+        </header>
+
+        <div class="panel">
+            <div class="panel-heading">
+                <div>
+                    <h2>Assignment Management</h2>
+                    <p class="muted">Create, search and delete assignments.</p>
+                </div>
+                <span class="pill">{{ assignments|length }} Assignments</span>
+            </div>
+
+            <div class="form-box">
+                <h3>＋ Create a New Assignment</h3>
+
+                <form method="POST" action="{{ url_for('add_assignment') }}">
+                    <div class="form-grid">
+                        <input type="text" name="title"
+                            placeholder="Assignment title" required>
+
+                        <select name="student_id">
+                            <option value="">For all students / unassigned</option>
+                            {% for student in students %}
+                            <option value="{{ student.student_id }}">
+                                {{ student.name }} — {{ student.department }}
+                            </option>
+                            {% endfor %}
+                        </select>
+
+                        <input type="date" name="due_date"
+                            aria-label="Assignment due date">
+
+                        <textarea name="description"
+                            placeholder="Assignment description"></textarea>
+                    </div>
+
+                    <button class="primary-btn full-btn" type="submit">
+                        + Save Assignment
+                    </button>
+                </form>
+            </div>
+
+            <h2>Saved Assignments</h2>
+            <input class="search" type="text"
+                placeholder="Search assignments..."
+                oninput="filterTable(this, 'assignmentTable')"
+                style="margin:20px 0">
+
+            <div class="table-wrap">
+                <table id="assignmentTable">
+                    <thead>
+                        <tr>
+                            <th>ID</th>
+                            <th>Title / Description</th>
+                            <th>Student</th>
+                            <th>Due Date</th>
+                            <th>Status</th>
+                            <th>Action</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                    {% for item in assignments %}
+                        <tr>
+                            <td>{{ item.assignment_id }}</td>
+                            <td>
+                                <strong>{{ item.title }}</strong>
+                                <div class="muted">{{ item.description or '' }}</div>
+                            </td>
+                            <td>{{ item.student_name }}</td>
+                            <td>{{ item.due_date or 'Not set' }}</td>
+                            <td><span class="pill">{{ item.status }}</span></td>
+                            <td>
+                                <form method="POST"
+                                    action="{{ url_for('delete_assignment', assignment_id=item.assignment_id) }}"
+                                    onsubmit="return confirm('Delete this assignment?')">
+                                    <button class="danger-btn" type="submit">
+                                        Delete
+                                    </button>
+                                </form>
+                            </td>
+                        </tr>
+                    {% else %}
+                        <tr>
+                            <td colspan="6" class="empty">
+                                No assignments yet. Create your first assignment above.
+                            </td>
+                        </tr>
+                    {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </section>
+
+
+    <!-- MEETINGS -->
+    <section id="meetings" class="page-section">
+        <header class="topbar">
+            <h1>Mentorship Meetings</h1>
+            <p>Schedule meetings between students and mentors.</p>
+        </header>
+
+        <div class="panel">
+            <div class="panel-heading">
+                <div>
+                    <h2>Meeting Management</h2>
+                    <p class="muted">Schedule, view and remove meetings.</p>
+                </div>
+                <span class="pill">{{ meetings|length }} Meetings</span>
+            </div>
+
+            <div class="form-box">
+                <h3>＋ Schedule a New Meeting</h3>
+
+                <form method="POST" action="{{ url_for('add_meeting') }}">
+                    <div class="form-grid">
+                        <select name="student_id">
+                            <option value="">Select Student (optional)</option>
+                            {% for student in students %}
+                            <option value="{{ student.student_id }}">
+                                {{ student.name }} — {{ student.department }}
+                            </option>
+                            {% endfor %}
+                        </select>
+
+                        <select name="mentor_id">
+                            <option value="">Select Mentor (optional)</option>
+                            {% for mentor in mentors %}
+                            <option value="{{ mentor.mentor_id }}">
+                                {{ mentor.mentor_name }} — {{ mentor.department }}
+                            </option>
+                            {% endfor %}
+                        </select>
+
+                        <input type="date" name="meeting_date"
+                            aria-label="Meeting date" required>
+
+                        <input type="time" name="meeting_time"
+                            aria-label="Meeting time">
+
+                        <input type="text" name="topic"
+                            placeholder="Meeting topic or purpose" required>
+                    </div>
+
+                    <button class="primary-btn full-btn" type="submit">
+                        + Schedule Meeting
+                    </button>
+                </form>
+            </div>
+
+            <h2>Scheduled Meetings</h2>
+            <input class="search" type="text"
+                placeholder="Search meetings..."
+                oninput="filterTable(this, 'meetingTable')"
+                style="margin:20px 0">
+
+            <div class="table-wrap">
+                <table id="meetingTable">
+                    <thead>
+                        <tr>
+                            <th>ID</th>
+                            <th>Student</th>
+                            <th>Mentor</th>
+                            <th>Date</th>
+                            <th>Time</th>
+                            <th>Topic</th>
+                            <th>Status</th>
+                            <th>Action</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                    {% for item in meetings %}
+                        <tr>
+                            <td>{{ item.meeting_id }}</td>
+                            <td>{{ item.student_name }}</td>
+                            <td>{{ item.mentor_name }}</td>
+                            <td>{{ item.meeting_date }}</td>
+                            <td>{{ item.meeting_time or 'Not set' }}</td>
+                            <td>{{ item.topic }}</td>
+                            <td><span class="pill">{{ item.status }}</span></td>
+                            <td>
+                                <form method="POST"
+                                    action="{{ url_for('delete_meeting', meeting_id=item.meeting_id) }}"
+                                    onsubmit="return confirm('Delete this meeting?')">
+                                    <button class="danger-btn" type="submit">
+                                        Delete
+                                    </button>
+                                </form>
+                            </td>
+                        </tr>
+                    {% else %}
+                        <tr>
+                            <td colspan="8" class="empty">
+                                No meetings scheduled yet.
+                            </td>
+                        </tr>
+                    {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </section>
+
+
+    <!-- ANALYTICS -->
+    <section id="analytics" class="page-section">
+        <header class="topbar">
+            <h1>Analytics & Insights</h1>
+            <p>Understand student registrations and department distribution.</p>
+        </header>
+
+        <div class="stats-grid">
+            <div class="stat-card">
+                <div class="stat-icon icon-purple">♙</div>
+                <div class="stat-label">Students</div>
+                <div class="stat-number">{{ stats.students }}</div>
+                <div class="stat-note">Total registered</div>
+            </div>
+
+            <div class="stat-card">
+                <div class="stat-icon icon-blue">♧</div>
+                <div class="stat-label">Mentors</div>
+                <div class="stat-number">{{ stats.mentors }}</div>
+                <div class="stat-note">Total registered</div>
+            </div>
+
+            <div class="stat-card">
+                <div class="stat-icon icon-pink">▤</div>
+                <div class="stat-label">Assignments</div>
+                <div class="stat-number">{{ stats.assignments }}</div>
+                <div class="stat-note">Total saved</div>
+            </div>
+
+            <div class="stat-card">
+                <div class="stat-icon icon-green">◷</div>
+                <div class="stat-label">Meetings</div>
+                <div class="stat-number">{{ stats.meetings }}</div>
+                <div class="stat-note">Total scheduled</div>
+            </div>
+        </div>
+
+        <div class="analytics-grid">
+            <div class="chart-card">
+                <h3>Students by Department</h3>
+                <p class="muted">Number of students registered in each department.</p>
+
+                {% for dept in department_data %}
+                <div class="bar-item">
+                    <div class="bar-label">
+                        <span>{{ dept.department }}</span>
+                        <strong>{{ dept.total }}</strong>
+                    </div>
+                    <div class="bar-track">
+                        <div class="bar-fill"
+                            style="width: {{ (dept.total * 100 / stats.students) if stats.students else 0 }}%">
+                        </div>
+                    </div>
+                </div>
+                {% else %}
+                <p class="empty">Add students to view department analytics.</p>
+                {% endfor %}
+            </div>
+
+            <div class="chart-card">
+                <h3>Mentorship Overview</h3>
+                <p class="muted">Current records in your system.</p>
+
+                <div class="bar-item">
+                    <div class="bar-label">
+                        <span>Students</span>
+                        <strong>{{ stats.students }}</strong>
+                    </div>
+                    <div class="bar-track">
+                        <div class="bar-fill"
+                            style="width: {{ (stats.students * 100 / (stats.students + stats.mentors)) if (stats.students + stats.mentors) else 0 }}%">
+                        </div>
+                    </div>
+                </div>
+
+                <div class="bar-item">
+                    <div class="bar-label">
+                        <span>Mentors</span>
+                        <strong>{{ stats.mentors }}</strong>
+                    </div>
+                    <div class="bar-track">
+                        <div class="bar-fill"
+                            style="width: {{ (stats.mentors * 100 / (stats.students + stats.mentors)) if (stats.students + stats.mentors) else 0 }}%">
+                        </div>
+                    </div>
+                </div>
+
+                <div class="bar-item">
+                    <div class="bar-label">
+                        <span>Assignments</span>
+                        <strong>{{ stats.assignments }}</strong>
+                    </div>
+                    <div class="bar-track">
+                        <div class="bar-fill"
+                            style="width: {{ (stats.assignments * 100 / (stats.assignments + stats.meetings)) if (stats.assignments + stats.meetings) else 0 }}%">
+                        </div>
+                    </div>
+                </div>
+
+                <div class="bar-item">
+                    <div class="bar-label">
+                        <span>Meetings</span>
+                        <strong>{{ stats.meetings }}</strong>
+                    </div>
+                    <div class="bar-track">
+                        <div class="bar-fill"
+                            style="width: {{ (stats.meetings * 100 / (stats.assignments + stats.meetings)) if (stats.assignments + stats.meetings) else 0 }}%">
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+</main>
+
+
+<script>
+    // Sidebar navigation: switch sections without opening another page.
+    function showPage(pageId) {
+        document.querySelectorAll(".page-section").forEach(function(section) {
+            section.classList.remove("active");
+        });
+
+        document.querySelectorAll(".nav-link").forEach(function(link) {
+            link.classList.remove("active");
+        });
+
+        const target = document.getElementById(pageId);
+
+        if (target) {
+            target.classList.add("active");
+        }
+
+        const activeLink = document.querySelector(
+            '.nav-link[data-page="' + pageId + '"]'
+        );
+
+        if (activeLink) {
+            activeLink.classList.add("active");
+        }
+
+        history.replaceState(null, "", "#" + pageId);
+        window.scrollTo({ top: 0, behavior: "smooth" });
+    }
+
+    document.querySelectorAll(".nav-link").forEach(function(link) {
+        link.addEventListener("click", function() {
+            showPage(link.dataset.page);
+        });
+    });
+
+    // Open the correct section when a URL hash is present.
+    const initialPage = window.location.hash.replace("#", "");
+
+    if (initialPage && document.getElementById(initialPage)) {
+        showPage(initialPage);
+    }
+
+    // Search any table by filtering its rows.
+    function filterTable(input, tableId) {
+        const query = input.value.toLowerCase().trim();
+        const table = document.getElementById(tableId);
+
+        if (!table) return;
+
+        table.querySelectorAll("tbody tr").forEach(function(row) {
+            const rowText = row.innerText.toLowerCase();
+            row.style.display = rowText.includes(query) ? "" : "none";
+        });
+    }
+</script>
+
+</body>
+</html>
